@@ -36,6 +36,11 @@ class Message
      */
     private $createdAt;
 
+    public function __toString()
+    {
+        return $this->createdAt;
+    }
+
 
     /**
      * Get id
