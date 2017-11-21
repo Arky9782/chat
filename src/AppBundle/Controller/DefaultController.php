@@ -20,9 +20,11 @@ class DefaultController extends Controller
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction(MessageRepository $repository)
+    public function getMessagesAction()
     {
-        $repository->findAll();
+        $repository = $this->getDoctrine()->getRepository(Message::class)
+            ->findAll();
+
 
         $normalizer = [new ObjectNormalizer()];
         $encoder = [new JsonEncoder()];
@@ -30,7 +32,9 @@ class DefaultController extends Controller
 
         $jsonResponse = $serializer->serialize($repository,'json');
 
-        return $jsonResponse;
+        echo $jsonResponse;
+
+        exit();
     }
 
     /**
