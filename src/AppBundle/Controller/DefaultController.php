@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -32,9 +33,13 @@ class DefaultController extends Controller
 
         $jsonResponse = $serializer->serialize($repository,'json');
 
-        echo $jsonResponse;
+        $response = new JsonResponse();
+        $response->setContent($jsonResponse);
+        $response->sendContent();
 
         exit();
+
+
     }
 
     /**

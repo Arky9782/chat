@@ -25,7 +25,7 @@ class Message
     /**
      * @var string
      *
-     * @ORM\Column(name="body", type="string", length=255)
+     * @ORM\Column(name="body", type="text")
      */
     private $body;
 
@@ -35,11 +35,6 @@ class Message
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
-
-    public function __toString()
-    {
-        return $this->createdAt;
-    }
 
 
     /**
