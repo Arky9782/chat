@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Message;
 use AppBundle\Repository\MessageRepository;
+use AppBundle\Services\Flush;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -15,21 +16,17 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DefaultController extends Controller
 {
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction()
+    public function getMessagesAction(SerializerInterface $serializer)
     {
         $repository = $this->getDoctrine()->getRepository(Message::class)
             ->findAll();
-
-
-        $normalizer = [new ObjectNormalizer()];
-        $encoder = [new JsonEncoder()];
-        $serializer = new Serializer($normalizer, $encoder);
 
         $jsonResponse = $serializer->serialize($repository,'json');
 
@@ -46,22 +43,15 @@ class DefaultController extends Controller
      * @Route("/post", name="postMessage")
      * @Method("POST")
      */
-    public function postAction(Request $request, EntityManager $em)
+    public function postAction(Flush $flush, SerializerInterface $serializer, Request $request)
     {
-        $message = new Message();
-        $message->setBody('');
-        $message->setCreatedAt();
+        $message = new Message('');
 
-        $data = $request->getContent();
-
-        $normalizer = [new ObjectNormalizer()];
-        $encoder = [new JsonEncoder()];
-        $serializer = new Serializer($normalizer, $encoder);
-
+        $data = $request->getContent('body');
+        
         $serializer->deserialize($data,Message::class,'json',['object_to_populate' => $message]);
 
-        $em->persist($message);
-        $em->flush();
+        $flush($message);
 
 
         dump($message);
