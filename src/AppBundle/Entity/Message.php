@@ -36,6 +36,15 @@ class Message
      */
     private $createdAt;
 
+    public function __construct($msg)
+    {
+        return $this->setCreatedAt();
+
+        return $this->setBody($msg);
+
+
+    }
+
 
     /**
      * Get id
