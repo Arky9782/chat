@@ -40,6 +40,11 @@
 # Backup entities generated with doctrine:generate:entities command
 **/Entity/*~
 
+# Vendor
+/vendor/*
+**/var/*
+
 # Embedded web-server pid file
 /.web-server-pid
 .idea/workspace.xml
+*.xml
