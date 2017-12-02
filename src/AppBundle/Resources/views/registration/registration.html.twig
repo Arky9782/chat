@@ -1,0 +1,41 @@
+{{ form_start(form) }}
+<div class="container">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <div class="row centered-form">
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Sign up for our chat!</h3>
+                </div>
+                <div class="panel-body">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    {{ form_row(form.name) }}
+                                </div>
+                            </div>
+
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            {{ form_row(form.email) }}
+                        </div>
+
+
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    {{ form_row(form.plainPassword.first) }}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    {{ form_row(form.plainPassword.second) }}
+                                </div>
+                            </div>
+
+
+                        <button type="submit">Register</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

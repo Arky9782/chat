@@ -2,6 +2,9 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -36,8 +39,20 @@ class Message
      */
     private $createdAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
+     */
+    private $chatUser;
+
+    public function setUser($user)
+    {
+        $this->chatUser = $user;
+    }
+
+
     public function __construct($msg)
     {
+
         return $this->setCreatedAt();
 
         return $this->setBody($msg);
@@ -101,5 +116,7 @@ class Message
     {
         return $this->createdAt;
     }
+
+
 }
 

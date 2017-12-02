@@ -1,9 +1,16 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
+    encoders:
+        AppBundle\Entity\Chat_user: bcrypt
+
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
+        my_db_provider:
+            entity:
+                class: AppBundle:Chat_users
+                property: name
         in_memory:
             memory: ~
 
@@ -14,6 +21,13 @@ security:
             security: false
 
         main:
+            anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
+            pattern: ^/
+            http_basic: ~
+            provider: my_db_provider
             anonymous: ~
             # activate different ways to authenticate
 
