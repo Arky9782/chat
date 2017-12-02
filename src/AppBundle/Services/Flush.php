@@ -24,9 +24,8 @@ final class Flush
         $this->em = $manager;
     }
 
-    public function __invoke($data)
+    public function __invoke()
     {
-        $this->em->persist($data);
         $this->em->flush();
     }
 }

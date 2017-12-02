@@ -2,10 +2,14 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Chat_user;
 use AppBundle\Entity\Message;
 use AppBundle\Repository\MessageRepository;
 use AppBundle\Services\Flush;
+use AppBundle\Services\Persist;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,19 +27,22 @@ class DefaultController extends Controller
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction(SerializerInterface $serializer)
+    public function getMessagesAction(EntityManager $em, SerializerInterface $serializer)
     {
-        $repository = $this->getDoctrine()->getRepository(Message::class)
-            ->findAll();
+        $dql = "SELECT m FROM AppBundle:Message m";
+        $query = $em->createQuery($dql)
+            ->setFirstResult(0)
+            ->setMaxResults(20);
 
-        $jsonResponse = $serializer->serialize($repository,'json');
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+        $c = count($paginator);
 
-        $response = new JsonResponse();
-        $response->setContent($jsonResponse);
-        $response->sendContent();
+        foreach ($paginator as $messages) {
 
-        exit();
+            $arr[] = $jsonResponse = $serializer->serialize($messages, 'json');
+        }
 
+        return new JsonResponse($arr);
 
     }
 
@@ -43,7 +50,7 @@ class DefaultController extends Controller
      * @Route("/post", name="postMessage")
      * @Method("POST")
      */
-    public function postAction(Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(Chat_user $user, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message('');
 
@@ -51,8 +58,10 @@ class DefaultController extends Controller
         
         $serializer->deserialize($data,Message::class,'json',['object_to_populate' => $message]);
 
-        $flush($message);
+        $user->addMessage($message);
 
+        $persist($message);
+        $flush();
 
         dump($message);
 
