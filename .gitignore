@@ -46,7 +46,7 @@
 
 # Embedded web-server pid file
 /.web-server-pid
-/.idea/workspace.xml
-/.idea/*
+.idea/workspace.xml
+.idea/*
 *.xml
 *.xml
