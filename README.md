@@ -1,4 +1,5 @@
-.checkout
+Install
 =========
 
-A Symfony project created on November 20, 2017, 12:28 pm.
+1.composer install
+2.php doctrine:schema:update --force
