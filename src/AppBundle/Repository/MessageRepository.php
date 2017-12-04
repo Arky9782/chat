@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\EntityManager;
 
 /**
  * MessageRepository
@@ -10,6 +11,10 @@ namespace AppBundle\Repository;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
-    public add()
+    public function add(EntityManager $em)
+    {
+
+    }
+
 
 }

@@ -48,17 +48,22 @@ class DefaultController extends Controller
 
     /**
      * @Route("/post", name="postMessage")
+     *
+     *
      * @Method("POST")
      */
-    public function postAction(Chat_user $user, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message('');
+
+        $user = $this->getUser();
 
         $data = $request->getContent('body');
         
         $serializer->deserialize($data,Message::class,'json',['object_to_populate' => $message]);
 
         $user->addMessage($message);
+        $message->setUser($user);
 
         $persist($message);
         $flush();

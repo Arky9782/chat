@@ -9,8 +9,8 @@ security:
     providers:
         my_db_provider:
             entity:
-                class: AppBundle:Chat_users
-                property: name
+                class: AppBundle:Chat_user
+                property: username
         in_memory:
             memory: ~
 
@@ -22,9 +22,8 @@ security:
 
         main:
             anonymous: ~
-            form_login:
-                login_path: login
-                check_path: login
+            json_login:
+                check_path: /login
             pattern: ^/
             http_basic: ~
             provider: my_db_provider
