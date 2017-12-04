@@ -28,10 +28,10 @@ class Chat_user implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=15, unique=true)
+     * @ORM\Column(name="username", type="string", length=15, unique=true)
      * @Assert\NotBlank()
      */
-    private $name;
+    private $username;
 
     /**
      * @var string
@@ -70,17 +70,6 @@ class Chat_user implements UserInterface
     public function addMessage(Message $message)
     {
         $this->messages->add($message);
-        $message->setUser($this);
-    }
-
-    public function getPlainPassword()
-    {
-        return $this->plainPassword;
-    }
-
-    public function setPlainPassword($password)
-    {
-        $this->plainPassword = $password;
     }
 
     public function __construct()
@@ -89,23 +78,6 @@ class Chat_user implements UserInterface
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
         $this->messages = new ArrayCollection();
-    }
-
-    public function getUsername()
-    {
-        return $this->name;
-    }
-
-    public function getSalt()
-    {
-        // you *may* need a real salt depending on your encoder
-        // see section on salt below
-        return null;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
     }
 
     public function getRoles()
@@ -117,11 +89,18 @@ class Chat_user implements UserInterface
     {
     }
 
+    public function getSalt()
+    {
+        // The bcrypt algorithm doesn't require a separate salt.
+        // You *may* need a real salt if you choose a different encoder.
+        return null;
+    }
+
     public function serialize()
     {
         return serialize([
             $this->id,
-            $this->name,
+            $this->username,
             $this->password,
             ]
             // see section on salt below
@@ -134,113 +113,51 @@ class Chat_user implements UserInterface
     {
         list (
             $this->id,
-            $this->name,
+            $this->username,
             $this->password,
             // see section on salt below
             // $this->salt
             ) = unserialize($serialized);
     }
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Chat_user
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return Chat_user
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string
-     */
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return Chat_user
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return Chat_user
-     */
-    public function setIsActive($isActive)
+    public function setEmail($email)
     {
-        $this->isActive = $isActive;
-
-        return $this;
+        $this->email = $email;
     }
 
-    /**
-     * Get isActive
-     *
-     * @return bool
-     */
-    public function getIsActive()
+    public function getUsername()
     {
-        return $this->isActive;
+        return $this->username;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($password)
+    {
+        $this->plainPassword = $password;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 }
 
