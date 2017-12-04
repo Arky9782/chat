@@ -48,6 +48,6 @@
 /.web-server-pid
 .idea/workspace.xml
 .idea/*
-.idea/*
+/.idea/*
 *.xml
 *.xml
