@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Attachment;
 use AppBundle\Entity\Chat_user;
 use AppBundle\Entity\Message;
 use AppBundle\Repository\MessageRepository;
@@ -12,6 +13,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +32,7 @@ class DefaultController extends Controller
      */
     public function getMessagesAction(EntityManager $em, SerializerInterface $serializer)
     {
-        $dql = "SELECT m FROM AppBundle:Message m";
+        $dql = "SELECT m, u FROM AppBundle:Message m";
         $query = $em->createQuery($dql)
             ->setFirstResult(0)
             ->setMaxResults(20);
@@ -58,14 +61,33 @@ class DefaultController extends Controller
 
         $user = $this->getUser();
 
-        $data = $request->getContent('body');
-        
-        $serializer->deserialize($data,Message::class,'json',['object_to_populate' => $message]);
-
-        $user->addMessage($message);
         $message->setUser($user);
 
+        $user->addMessage($message);
+
+        if($data = $request->request->get('body'))
+        {
+            $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
+        }
+
+        if($uploadedFile = $request->files->get('file')) {
+
+            $fileName = md5(uniqid()) . '.' . $uploadedFile->guessExtension();
+
+            $uploadedFile->move('files_directory', $fileName);
+
+            $attachment = new Attachment();
+
+            $attachment->setFile($fileName);
+
+            $attachment->message($message);
+
+            $persist($attachment);
+
+        }
+
         $persist($message);
+
         $flush();
 
         dump($message);

@@ -2,11 +2,13 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Message
@@ -33,6 +35,13 @@ class Message
     private $body;
 
     /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Attachment", inversedBy="message")
+     * @ORM\JoinColumn(name="attachment_id", referencedColumnName="id")
+     */
+    private $attachment;
+
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -40,9 +49,14 @@ class Message
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
      */
     private $chatUser;
+
+    public function setAttachment($attachment)
+    {
+        $this->attachment = $attachment;
+    }
 
     public function setUser($user)
     {
@@ -56,6 +70,8 @@ class Message
         return $this->setCreatedAt();
 
         return $this->setBody($msg);
+
+        $this->attachments = new ArrayCollection();
 
 
     }
