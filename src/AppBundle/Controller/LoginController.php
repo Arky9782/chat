@@ -24,6 +24,7 @@ class LoginController extends Controller
      */
     public function loginAction(Request $request)
     {
+        return $this->redirectToRoute('homepage');
     }
 
 }
