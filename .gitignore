@@ -43,6 +43,7 @@
 # Vendor
 /vendor/*
 **/var/*
+**/files_directory/*
 
 # Embedded web-server pid file
 /.web-server-pid
