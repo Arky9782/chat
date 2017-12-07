@@ -46,6 +46,7 @@ class Chat_user implements UserInterface
      */
     private $plainPassword;
 
+
     /**
      * @var string
      *
