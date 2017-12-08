@@ -57,13 +57,11 @@ class DefaultController extends Controller
      */
     public function postAction(Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
     {
-        $message = new Message('');
+        $message = new Message();
 
         $user = $this->getUser();
 
         $message->setUser($user);
-
-        $user->addMessage($message);
 
         if($data = $request->request->get('body'))
         {
@@ -85,15 +83,14 @@ class DefaultController extends Controller
             $persist($attachment);
 
         }
+        
+        $user->addMessage($message);
 
         $persist($message);
 
         $flush();
 
-        dump($message);
-
-        exit();
-
+        return new Response(null,201);
 
     }
 

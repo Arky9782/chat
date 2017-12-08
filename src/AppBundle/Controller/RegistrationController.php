@@ -41,7 +41,7 @@ class RegistrationController extends Controller
             $persist($user);
             $flush();
 
-            return $this->redirectToRoute('homepage');
+            return 'Registration successful';
 
         }
 

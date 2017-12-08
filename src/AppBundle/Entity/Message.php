@@ -30,7 +30,7 @@ class Message
     /**
      * @var string
      *
-     * @ORM\Column(name="body", type="text")
+     * @ORM\Column(name="body", type="text", nullable=true)
      */
     private $body;
 
@@ -49,7 +49,7 @@ class Message
     private $createdAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
      */
     private $chatUser;
 
@@ -64,12 +64,12 @@ class Message
     }
 
 
-    public function __construct($msg)
+    public function __construct()
     {
 
         return $this->setCreatedAt();
 
-        return $this->setBody($msg);
+        return $this->setBody('');
 
         $this->attachments = new ArrayCollection();
 
