@@ -64,7 +64,7 @@ class Chat_user implements UserInterface
     private $isActive;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="$chatUser")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="chatUser")
      */
     private $messages;
 

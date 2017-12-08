@@ -26,7 +26,7 @@ class Attachment
     /**
      * @var string
      *
-     * @ORM\Column(name="string", type="string", length=255)
+     * @ORM\Column(name="file", type="string", length=255)
      */
     private $file;
 

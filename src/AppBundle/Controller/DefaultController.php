@@ -32,7 +32,7 @@ class DefaultController extends Controller
      */
     public function getMessagesAction(EntityManager $em, SerializerInterface $serializer)
     {
-        $dql = "SELECT m, u FROM AppBundle:Message m";
+        $dql = "SELECT u.username, a.file, m FROM AppBundle:Message m INNER JOIN m.chatUser u INNER JOIN m.attachment a";
         $query = $em->createQuery($dql)
             ->setFirstResult(0)
             ->setMaxResults(20);
@@ -70,7 +70,7 @@ class DefaultController extends Controller
 
         if($uploadedFile = $request->files->get('file')) {
 
-            $fileName = md5(uniqid()) . '.' . $uploadedFile->guessExtension();
+            $fileName = 'chat.dev/files_directory/'.md5(uniqid()) . '.' . $uploadedFile->guessExtension();
 
             $uploadedFile->move('files_directory', $fileName);
 
@@ -83,7 +83,7 @@ class DefaultController extends Controller
             $persist($attachment);
 
         }
-        
+
         $user->addMessage($message);
 
         $persist($message);
