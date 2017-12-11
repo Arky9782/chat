@@ -6,8 +6,11 @@ use AppBundle\Entity\Attachment;
 use AppBundle\Entity\Chat_user;
 use AppBundle\Entity\Message;
 use AppBundle\Repository\MessageRepository;
+use AppBundle\Services\FileNameGen;
 use AppBundle\Services\Flush;
+use AppBundle\Services\PathGen;
 use AppBundle\Services\Persist;
+use AppBundle\Services\UrlGen;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -17,6 +20,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -27,6 +31,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class DefaultController extends Controller
 {
+
     /**
      * @Route("/messages", name="homepage")
      */
@@ -55,7 +60,7 @@ class DefaultController extends Controller
      *
      * @Method("POST")
      */
-    public function postAction(Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(UrlGen $urlGen, FileNameGen $fileNameGen, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message();
 
@@ -70,13 +75,15 @@ class DefaultController extends Controller
 
         if($uploadedFile = $request->files->get('file')) {
 
-            $fileName = 'chat.dev/files_directory/'.md5(uniqid()) . '.' . $uploadedFile->guessExtension();
+            $fileName = $fileNameGen->genFileName();
+
+            $URL = $urlGen->genUrl().$fileName;
 
             $uploadedFile->move('files_directory', $fileName);
 
             $attachment = new Attachment();
 
-            $attachment->setFile($fileName);
+            $attachment->setFile($URL);
 
             $attachment->message($message);
 
