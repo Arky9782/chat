@@ -11,10 +11,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Chat_users
  *
- * @ORM\Table(name="chat_users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\Chat_usersRepository")
+ * @ORM\Table(name="users")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\usersRepository")
  */
-class Chat_user implements UserInterface
+class Users implements UserInterface
 {
     /**
      * @var int
@@ -46,7 +46,6 @@ class Chat_user implements UserInterface
      */
     private $plainPassword;
 
-
     /**
      * @var string
      *
@@ -67,6 +66,17 @@ class Chat_user implements UserInterface
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="chatUser")
      */
     private $messages;
+
+    /**
+     * @ORM\Column(name="last_message", type="datetime", nullable=true)
+     */
+    private $lastMessage;
+
+    public function read()
+    {
+        $this->lastMessage = new \DateTime("now");
+        return $this;
+    }
 
     public function addMessage(Message $message)
     {

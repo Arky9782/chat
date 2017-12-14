@@ -9,7 +9,7 @@
 namespace AppBundle\Form;
 
 
-use AppBundle\Entity\Chat_user;
+use AppBundle\Entity\Users;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -36,7 +36,7 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Chat_user::class,
+            'data_class' => Users::class,
         ]);
     }
 

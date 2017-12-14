@@ -3,29 +3,21 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Attachment;
-use AppBundle\Entity\Chat_user;
 use AppBundle\Entity\Message;
+use AppBundle\Entity\Users;
 use AppBundle\Repository\MessageRepository;
+use AppBundle\Repository\usersRepository;
 use AppBundle\Services\FileNameGen;
 use AppBundle\Services\Flush;
-use AppBundle\Services\PathGen;
 use AppBundle\Services\Persist;
 use AppBundle\Services\UrlGen;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -35,23 +27,17 @@ class DefaultController extends Controller
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction(EntityManager $em, SerializerInterface $serializer)
+    public function getMessagesAction(Flush $flush,EntityManager $em, SerializerInterface $serializer)
     {
-        $dql = "SELECT u.username, a.file, m FROM AppBundle:Message m INNER JOIN m.chatUser u INNER JOIN m.attachment a";
-        $query = $em->createQuery($dql)
-            ->setFirstResult(0)
-            ->setMaxResults(20);
+        $user = $this->getUser();
 
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-        $c = count($paginator);
+        $user->read();
+        $em->persist($user);
+        $flush();
 
-        foreach ($paginator as $messages) {
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->getMessages($em, $serializer);
 
-            $arr[] = $jsonResponse = $serializer->serialize($messages, 'json');
-        }
-
-        return new JsonResponse($arr);
-
+        return $messages;
     }
 
     /**

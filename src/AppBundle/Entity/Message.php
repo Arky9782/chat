@@ -49,9 +49,10 @@ class Message
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Chat_user", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="Users", inversedBy="messages")
      */
     private $chatUser;
+
 
     public function setAttachment($attachment)
     {
@@ -73,6 +74,11 @@ class Message
 
         $this->attachments = new ArrayCollection();
 
+
+    }
+
+    public function setReadAt()
+    {
 
     }
 

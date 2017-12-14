@@ -9,17 +9,16 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\Chat_user;
+use AppBundle\Entity\Users;
 use AppBundle\Form\UserType;
 use AppBundle\Services\Flush;
 use AppBundle\Services\Persist;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bridge\Doctrine\Tests\Fixtures\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\User;
 
 class RegistrationController extends Controller
 {
@@ -29,7 +28,7 @@ class RegistrationController extends Controller
 
     public function registerAction(Persist $persist, Flush $flush,Request $request, UserPasswordEncoderInterface $encoder)
     {
-        $user = new Chat_user();
+        $user = new Users();
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
@@ -41,7 +40,7 @@ class RegistrationController extends Controller
             $persist($user);
             $flush();
 
-            return 'Registration successful';
+            return new Response('Registration successful',201);
 
         }
 

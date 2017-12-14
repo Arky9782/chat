@@ -2,14 +2,14 @@
 # https://symfony.com/doc/current/security.html
 security:
     encoders:
-        AppBundle\Entity\Chat_user: bcrypt
+        AppBundle\Entity\Users: bcrypt
 
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
         my_db_provider:
             entity:
-                class: AppBundle:Chat_user
+                class: AppBundle:Users
                 property: username
         in_memory:
             memory: ~
