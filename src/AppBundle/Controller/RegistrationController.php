@@ -9,7 +9,7 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\Users;
+use AppBundle\Entity\User;
 use AppBundle\Form\UserType;
 use AppBundle\Services\Flush;
 use AppBundle\Services\Persist;
@@ -18,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\User\User;
 
 class RegistrationController extends Controller
 {
@@ -28,7 +27,7 @@ class RegistrationController extends Controller
 
     public function registerAction(Persist $persist, Flush $flush,Request $request, UserPasswordEncoderInterface $encoder)
     {
-        $user = new Users();
+        $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);

@@ -2,9 +2,12 @@
 
 namespace AppBundle\Repository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
+
 
 /**
  * MessageRepository
@@ -14,22 +17,34 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getMessages(EntityManager $em, SerializerInterface $serializer)
+    private $em;
+
+    public function __construct(EntityManager $em, Mapping\ClassMetadata $class)
     {
-        $dql = "SELECT u.username, a.file, m FROM AppBundle:Message m INNER JOIN m.chatUser u INNER JOIN m.attachment a";
-        $query = $em->createQuery($dql)
-            ->setFirstResult(0)
-            ->setMaxResults(20);
+        $this->em = $em;
+        parent::__construct($em, $class);
+    }
 
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-        $c = count($paginator);
+    public function getMessages()
+    {
+        $querybuilder = $this->em->createQueryBuilder()
+            ->select('m.body','m.createdAt','m.id', 'a.file', 'u.username')
+            ->from('AppBundle:Message','m')
+            ->innerJoin('m.User','u')
+            ->innerJoin('m.attachment','a')
+            ->setMaxResults(50)
+            ->setFirstResult(0);
 
-        foreach ($paginator as $messages) {
+        $paginator = new Paginator($querybuilder, $fetchJoinCollection = true);
+        $paginator->setUseOutputWalkers(false);
 
-             $arr[] = $jsonResponse = $serializer->serialize($messages, 'json');
+        $arr = [];
+        foreach ($paginator as $result) {
+            $arr[] = $result;
         }
 
-        return new JsonResponse($arr);
+
+        return $arr;
 
     }
 

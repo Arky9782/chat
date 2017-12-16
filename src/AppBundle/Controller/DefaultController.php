@@ -4,15 +4,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Attachment;
 use AppBundle\Entity\Message;
-use AppBundle\Entity\Users;
-use AppBundle\Repository\MessageRepository;
-use AppBundle\Repository\usersRepository;
-use AppBundle\Services\FileNameGen;
+use AppBundle\Services\FileFactory;
 use AppBundle\Services\Flush;
 use AppBundle\Services\Persist;
-use AppBundle\Services\UrlGen;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,9 +30,9 @@ class DefaultController extends Controller
         $em->persist($user);
         $flush();
 
-        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->getMessages($em, $serializer);
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->getMessages();
 
-        return $messages;
+        return new JsonResponse($messages);
     }
 
     /**
@@ -46,7 +41,7 @@ class DefaultController extends Controller
      *
      * @Method("POST")
      */
-    public function postAction(UrlGen $urlGen, FileNameGen $fileNameGen, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(FileFactory $fileFactory, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message();
 
@@ -59,17 +54,13 @@ class DefaultController extends Controller
             $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
         }
 
-        if($uploadedFile = $request->files->get('file')) {
-
-            $fileName = $fileNameGen->genFileName();
-
-            $URL = $urlGen->genUrl().$fileName;
-
-            $uploadedFile->move('files_directory', $fileName);
+        if($uploadedFile = $request->files->get('file'))
+        {
+            $url = $fileFactory->getFile($uploadedFile);
 
             $attachment = new Attachment();
 
-            $attachment->setFile($URL);
+            $attachment->setFile($url);
 
             $attachment->message($message);
 

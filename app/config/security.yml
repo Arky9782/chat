@@ -2,14 +2,14 @@
 # https://symfony.com/doc/current/security.html
 security:
     encoders:
-        AppBundle\Entity\Users: bcrypt
+        AppBundle\Entity\User: bcrypt
 
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
         my_db_provider:
             entity:
-                class: AppBundle:Users
+                class: AppBundle:User
                 property: username
         in_memory:
             memory: ~

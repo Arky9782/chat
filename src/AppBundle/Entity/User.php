@@ -12,9 +12,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Chat_users
  *
  * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\usersRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\userRepository")
  */
-class Users implements UserInterface
+class User implements UserInterface
 {
     /**
      * @var int
@@ -63,7 +63,7 @@ class Users implements UserInterface
     private $isActive;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="chatUser")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="User")
      */
     private $messages;
 

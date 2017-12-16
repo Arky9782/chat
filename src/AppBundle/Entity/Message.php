@@ -49,9 +49,9 @@ class Message
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="messages")
      */
-    private $chatUser;
+    private $User;
 
 
     public function setAttachment($attachment)
@@ -61,7 +61,7 @@ class Message
 
     public function setUser($user)
     {
-        $this->chatUser = $user;
+        $this->User = $user;
     }
 
 
@@ -72,7 +72,7 @@ class Message
 
         return $this->setBody('');
 
-        $this->attachments = new ArrayCollection();
+        $this->attachment = new ArrayCollection();
 
 
     }
