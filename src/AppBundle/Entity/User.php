@@ -68,9 +68,14 @@ class User implements UserInterface
     private $messages;
 
     /**
-     * @ORM\Column(name="last_message", type="datetime", nullable=true)
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Participant", mappedBy="users")
      */
-    private $lastMessage;
+    private $participants;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Channel", mappedBy="users")
+     */
+    private $channels;
 
     public function read()
     {
@@ -89,6 +94,12 @@ class User implements UserInterface
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
         $this->messages = new ArrayCollection();
+        $this->channels = new ArrayCollection();
+        $this->participants = new ArrayCollection();
+
+        $this->setPassword(crypt('',133232));
+        $this->setUsername('');
+        $this->setEmail('');
     }
 
     public function getRoles()

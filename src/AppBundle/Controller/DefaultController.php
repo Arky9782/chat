@@ -4,9 +4,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Attachment;
 use AppBundle\Entity\Message;
-use AppBundle\Services\FileFactory;
+use AppBundle\Repository\Persist;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Services\FileUploader;
 use AppBundle\Services\Flush;
-use AppBundle\Services\Persist;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,6 +25,7 @@ class DefaultController extends Controller
      */
     public function getMessagesAction(Flush $flush,EntityManager $em, SerializerInterface $serializer)
     {
+
         $user = $this->getUser();
 
         $user->read();
@@ -41,7 +43,7 @@ class DefaultController extends Controller
      *
      * @Method("POST")
      */
-    public function postAction(FileFactory $fileFactory, Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(Persist $persist, FileUploader $fileUploader, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message();
 
@@ -56,11 +58,11 @@ class DefaultController extends Controller
 
         if($uploadedFile = $request->files->get('file'))
         {
-            $url = $fileFactory->getFile($uploadedFile);
+            $path = $fileUploader->getFile($uploadedFile);
 
             $attachment = new Attachment();
 
-            $attachment->setFile($url);
+            $attachment->setFile($path);
 
             $attachment->message($message);
 

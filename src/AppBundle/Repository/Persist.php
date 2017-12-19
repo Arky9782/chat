@@ -2,27 +2,27 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 01.12.2017
- * Time: 22:51
+ * Date: 18.12.2017
+ * Time: 21:57
  */
 
-namespace AppBundle\Services;
+namespace AppBundle\Repository;
 
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
-final class Persist
+class Persist
 {
     private $em;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
+
 
     public function __invoke($data)
     {
         $this->em->persist($data);
     }
-
 }

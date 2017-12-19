@@ -14,7 +14,7 @@ namespace AppBundle\Services;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class FileFactory
+class FileUploader
 {
 
     public function getFile($uploadedFile)
@@ -23,9 +23,10 @@ class FileFactory
 
         $uploadedFile->move('files_directory', $filename);
 
-        $url = '/files_directory/'.$filename;
+        $path = '/files_directory/'.$filename;
 
-        return $url;
+        return $path;
+
     }
 
 }

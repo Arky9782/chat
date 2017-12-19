@@ -28,7 +28,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
     public function getMessages()
     {
         $querybuilder = $this->em->createQueryBuilder()
-            ->select('m.body','m.createdAt','m.id', 'a.file', 'u.username')
+            ->select('m.body','m.createdAt','m.id', 'a.file', 'u.username','u.channels')
             ->from('AppBundle:Message','m')
             ->innerJoin('m.User','u')
             ->innerJoin('m.attachment','a')
@@ -43,9 +43,13 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
             $arr[] = $result;
         }
 
-
         return $arr;
 
+    }
+
+    public function persist($data)
+    {
+        $this->em->persist($data);
     }
 
 
