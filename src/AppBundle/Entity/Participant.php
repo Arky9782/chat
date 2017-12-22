@@ -44,6 +44,7 @@ class Participant
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->channels = new ArrayCollection();
     }
 
 
@@ -57,19 +58,6 @@ class Participant
         return $this->id;
     }
 
-    /**
-     * Set readAt
-     *
-     * @param \DateTime $readAt
-     *
-     * @return Participant
-     */
-    public function setReadAt($readAt)
-    {
-        $this->readAt = $readAt;
-
-        return $this;
-    }
 
     /**
      * Get readAt

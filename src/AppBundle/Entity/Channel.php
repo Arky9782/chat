@@ -29,18 +29,12 @@ class Channel
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", inversedBy="channels")
-     */
-    private $users;
-
-    /**
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Participant", mappedBy="channels")
      */
     private $participants;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
         $this->participants = new ArrayCollection();
     }
 

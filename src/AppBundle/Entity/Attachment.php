@@ -61,6 +61,11 @@ class Attachment
         return $this;
     }
 
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
     public function message(Message $message)
     {
         $this->setMessage($message);

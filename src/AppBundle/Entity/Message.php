@@ -59,6 +59,11 @@ class Message
         $this->attachment = $attachment;
     }
 
+    public function getAttachment()
+    {
+        return $this->attachment;
+    }
+
     public function setUser($user)
     {
         $this->User = $user;
@@ -72,7 +77,6 @@ class Message
 
         return $this->setBody('');
 
-        $this->attachment = new ArrayCollection();
 
 
     }

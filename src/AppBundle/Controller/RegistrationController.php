@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Repository\Persist;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Services\Flush;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,7 +26,7 @@ class RegistrationController extends Controller
      * @Route("/register", name="register")
      */
 
-    public function registerAction(SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder, Persist $persist, Flush $flush, Request $request)
+    public function registerAction(SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder, UserRepository $repository, Flush $flush, Request $request)
     {
         $user = new User();
 
@@ -37,7 +38,7 @@ class RegistrationController extends Controller
         $user->setPassword($password);
 
 
-        $persist($user);
+        $repository->add($user);
 
         $flush();
 

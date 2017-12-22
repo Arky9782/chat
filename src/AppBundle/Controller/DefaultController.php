@@ -9,6 +9,7 @@ use AppBundle\Repository\UserRepository;
 use AppBundle\Services\FileUploader;
 use AppBundle\Services\Flush;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,14 +24,8 @@ class DefaultController extends Controller
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction(Flush $flush,EntityManager $em, SerializerInterface $serializer)
+    public function getMessagesAction(Flush $flush,EntityManagerInterface $em, SerializerInterface $serializer)
     {
-
-        $user = $this->getUser();
-
-        $user->read();
-        $em->persist($user);
-        $flush();
 
         $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->getMessages();
 
@@ -43,7 +38,7 @@ class DefaultController extends Controller
      *
      * @Method("POST")
      */
-    public function postAction(Persist $persist, FileUploader $fileUploader, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(UserRepository $repository, FileUploader $fileUploader, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message();
 
@@ -51,7 +46,7 @@ class DefaultController extends Controller
 
         $message->setUser($user);
 
-        if($data = $request->request->get('body'))
+        if($data = $request->getContent())
         {
             $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
         }
@@ -66,13 +61,13 @@ class DefaultController extends Controller
 
             $attachment->message($message);
 
-            $persist($attachment);
+            $repository->add($attachment);
 
         }
 
         $user->addMessage($message);
 
-        $persist($message);
+        $repository->add($message);
 
         $flush();
 

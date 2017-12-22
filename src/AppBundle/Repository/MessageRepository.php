@@ -5,8 +5,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -27,29 +26,23 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
     public function getMessages()
     {
-        $querybuilder = $this->em->createQueryBuilder()
-            ->select('m.body','m.createdAt','m.id', 'a.file', 'u.username','u.channels')
-            ->from('AppBundle:Message','m')
-            ->innerJoin('m.User','u')
-            ->innerJoin('m.attachment','a')
-            ->setMaxResults(50)
-            ->setFirstResult(0);
+        $dql = "SELECT m, u, m.id, m.body, m.createdAt, u.username,(SELECT a.file FROM AppBundle:Attachment a WHERE a.id = m.id) FROM AppBundle:Message m JOIN m.User u";
 
-        $paginator = new Paginator($querybuilder, $fetchJoinCollection = true);
-        $paginator->setUseOutputWalkers(false);
+        $query = $this->em->createQuery($dql)
+                           ->setFirstResult(0)
+                           ->setMaxResults(50);
 
-        $arr = [];
-        foreach ($paginator as $result) {
+        $paginator = new Paginator($query, $fetchJoinCollections = true);
+
+        $c = count($paginator);
+        foreach ($paginator as $result)
+        {
             $arr[] = $result;
         }
 
+
         return $arr;
 
-    }
-
-    public function persist($data)
-    {
-        $this->em->persist($data);
     }
 
 

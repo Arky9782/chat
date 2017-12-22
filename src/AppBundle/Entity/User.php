@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Chat_users
  *
  * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\userRepository")
+ * @ORM\Entity
  */
 class User implements UserInterface
 {
@@ -72,11 +72,6 @@ class User implements UserInterface
      */
     private $participants;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Channel", mappedBy="users")
-     */
-    private $channels;
-
     public function read()
     {
         $this->lastMessage = new \DateTime("now");
@@ -94,12 +89,8 @@ class User implements UserInterface
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
         $this->messages = new ArrayCollection();
-        $this->channels = new ArrayCollection();
         $this->participants = new ArrayCollection();
 
-        $this->setPassword(crypt('',133232));
-        $this->setUsername('');
-        $this->setEmail('');
     }
 
     public function getRoles()
