@@ -11,10 +11,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Chat_users
  *
- * @ORM\Table(name="chat_users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\Chat_usersRepository")
+ * @ORM\Table(name="users")
+ * @ORM\Entity
  */
-class Chat_user implements UserInterface
+class User implements UserInterface
 {
     /**
      * @var int
@@ -46,7 +46,6 @@ class Chat_user implements UserInterface
      */
     private $plainPassword;
 
-
     /**
      * @var string
      *
@@ -64,9 +63,20 @@ class Chat_user implements UserInterface
     private $isActive;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="$chatUser")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Message", mappedBy="User")
      */
     private $messages;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Participant", mappedBy="users")
+     */
+    private $participants;
+
+    public function read()
+    {
+        $this->lastMessage = new \DateTime("now");
+        return $this;
+    }
 
     public function addMessage(Message $message)
     {
@@ -79,6 +89,8 @@ class Chat_user implements UserInterface
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
         $this->messages = new ArrayCollection();
+        $this->participants = new ArrayCollection();
+
     }
 
     public function getRoles()

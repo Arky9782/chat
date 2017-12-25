@@ -3,50 +3,33 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Attachment;
-use AppBundle\Entity\Chat_user;
 use AppBundle\Entity\Message;
-use AppBundle\Repository\MessageRepository;
+use AppBundle\Repository\Persist;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Services\FileUploader;
 use AppBundle\Services\Flush;
-use AppBundle\Services\Persist;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class DefaultController extends Controller
 {
+
     /**
      * @Route("/messages", name="homepage")
      */
-    public function getMessagesAction(EntityManager $em, SerializerInterface $serializer)
+    public function getMessagesAction(Flush $flush,EntityManagerInterface $em, SerializerInterface $serializer)
     {
-        $dql = "SELECT m, u FROM AppBundle:Message m";
-        $query = $em->createQuery($dql)
-            ->setFirstResult(0)
-            ->setMaxResults(20);
 
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-        $c = count($paginator);
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->getMessages();
 
-        foreach ($paginator as $messages) {
-
-            $arr[] = $jsonResponse = $serializer->serialize($messages, 'json');
-        }
-
-        return new JsonResponse($arr);
-
+        return new JsonResponse($messages);
     }
 
     /**
@@ -55,7 +38,7 @@ class DefaultController extends Controller
      *
      * @Method("POST")
      */
-    public function postAction(Persist $persist, Flush $flush, SerializerInterface $serializer, Request $request)
+    public function postAction(UserRepository $repository, FileUploader $fileUploader, Flush $flush, SerializerInterface $serializer, Request $request)
     {
         $message = new Message();
 
@@ -63,30 +46,28 @@ class DefaultController extends Controller
 
         $message->setUser($user);
 
-        if($data = $request->request->get('body'))
+        if($data = $request->getContent())
         {
             $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
         }
 
-        if($uploadedFile = $request->files->get('file')) {
-
-            $fileName = md5(uniqid()) . '.' . $uploadedFile->guessExtension();
-
-            $uploadedFile->move('files_directory', $fileName);
+        if($uploadedFile = $request->files->get('file'))
+        {
+            $path = $fileUploader->getFile($uploadedFile);
 
             $attachment = new Attachment();
 
-            $attachment->setFile($fileName);
+            $attachment->setFile($path);
 
             $attachment->message($message);
 
-            $persist($attachment);
+            $repository->add($attachment);
 
         }
-        
+
         $user->addMessage($message);
 
-        $persist($message);
+        $repository->add($message);
 
         $flush();
 

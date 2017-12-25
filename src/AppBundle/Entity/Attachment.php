@@ -26,7 +26,7 @@ class Attachment
     /**
      * @var string
      *
-     * @ORM\Column(name="string", type="string", length=255)
+     * @ORM\Column(name="file", type="string", length=255)
      */
     private $file;
 
@@ -59,6 +59,11 @@ class Attachment
         $this->message = $message;
 
         return $this;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
     }
 
     public function message(Message $message)

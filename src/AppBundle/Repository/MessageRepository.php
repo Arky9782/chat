@@ -2,6 +2,11 @@
 
 namespace AppBundle\Repository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Symfony\Component\HttpFoundation\Request;
+
 
 /**
  * MessageRepository
@@ -11,8 +16,32 @@ use Doctrine\ORM\EntityManager;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function add(EntityManager $em)
+    private $em;
+
+    public function __construct(EntityManager $em, Mapping\ClassMetadata $class)
     {
+        $this->em = $em;
+        parent::__construct($em, $class);
+    }
+
+    public function getMessages()
+    {
+        $dql = "SELECT m, u, m.id, m.body, m.createdAt, u.username,(SELECT a.file FROM AppBundle:Attachment a WHERE a.id = m.id) FROM AppBundle:Message m JOIN m.User u";
+
+        $query = $this->em->createQuery($dql)
+                           ->setFirstResult(0)
+                           ->setMaxResults(50);
+
+        $paginator = new Paginator($query, $fetchJoinCollections = true);
+
+        $c = count($paginator);
+        foreach ($paginator as $result)
+        {
+            $arr[] = $result;
+        }
+
+
+        return $arr;
 
     }
 

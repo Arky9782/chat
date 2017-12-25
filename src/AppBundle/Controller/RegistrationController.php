@@ -9,17 +9,16 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\Chat_user;
-use AppBundle\Form\UserType;
+use AppBundle\Entity\User;
+use AppBundle\Repository\Persist;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Services\Flush;
-use AppBundle\Services\Persist;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bridge\Doctrine\Tests\Fixtures\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class RegistrationController extends Controller
 {
@@ -27,28 +26,23 @@ class RegistrationController extends Controller
      * @Route("/register", name="register")
      */
 
-    public function registerAction(Persist $persist, Flush $flush,Request $request, UserPasswordEncoderInterface $encoder)
+    public function registerAction(SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder, UserRepository $repository, Flush $flush, Request $request)
     {
-        $user = new Chat_user();
-        $form = $this->createForm(UserType::class, $user);
+        $user = new User();
 
-        $form->handleRequest($request);
-        if($form->isSubmitted() and $form->isValid())
-        {
-            $password = $encoder->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
+        $data = $request->getContent();
 
-            $persist($user);
-            $flush();
+        $serializer->deserialize($data,User::class,'json',['object_to_populate' => $user]);
 
-            return 'Registration successful';
+        $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+        $user->setPassword($password);
 
-        }
 
-        return $this->render('AppBundle:registration:registration.html.twig',[
-            'form' => $form->createView()
-        ]);
+        $repository->add($user);
 
+        $flush();
+
+        return new Response('Registration successful!',201);
 
     }
 
