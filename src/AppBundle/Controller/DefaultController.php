@@ -40,30 +40,19 @@ class DefaultController extends Controller
      */
     public function postAction(UserRepository $repository, FileUploader $fileUploader, Flush $flush, SerializerInterface $serializer, Request $request)
     {
+        $data = $request->getContent();
+
+        $file = $request->files->get('file');
+
+        $string = base64_encode($file);
+
         $message = new Message();
 
         $user = $this->getUser();
 
         $message->setUser($user);
 
-        if($data = $request->getContent())
-        {
-            $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
-        }
-
-        if($uploadedFile = $request->files->get('file'))
-        {
-            $path = $fileUploader->getFile($uploadedFile);
-
-            $attachment = new Attachment();
-
-            $attachment->setFile($path);
-
-            $attachment->message($message);
-
-            $repository->add($attachment);
-
-        }
+        $serializer->deserialize($data, Message::class, 'json', ['object_to_populate' => $message]);
 
         $user->addMessage($message);
 

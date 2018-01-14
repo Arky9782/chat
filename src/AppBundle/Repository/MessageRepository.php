@@ -26,13 +26,24 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
     public function getMessages()
     {
-        $dql = "SELECT m, u, m.id, m.body, m.createdAt, u.username,(SELECT a.file FROM AppBundle:Attachment a WHERE a.id = m.id) FROM AppBundle:Message m JOIN m.User u";
+        $dql = "SELECT m, u, m.id, m.body, m.createdAt, u.username FROM AppBundle:Message m JOIN m.User u";
 
         $query = $this->em->createQuery($dql)
                            ->setFirstResult(0)
                            ->setMaxResults(50);
+        $result = $query->getScalarResult();
 
-        $paginator = new Paginator($query, $fetchJoinCollections = true);
+
+
+        $query1 = $this->em->createQueryBuilder()
+                           ->select('a','a.file')
+                           ->from('AppBundle:Attachment','a')
+                           ->where('a.message = a.id')
+                           ->setFirstResult(0)
+                           ->setMaxResults(50);
+
+
+        $paginator = new Paginator($query1, $fetchJoinCollections = true);
 
         $c = count($paginator);
         foreach ($paginator as $result)
@@ -41,7 +52,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         }
 
 
-        return $arr;
+        dump($query1->getQuery()->getScalarResult());
 
     }
 

@@ -35,10 +35,10 @@ class Message
     private $body;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Attachment", inversedBy="message")
-     * @ORM\JoinColumn(name="attachment_id", referencedColumnName="id")
+     * @ORM\Column(name="file", type="string", nullable=true)
      */
-    private $attachment;
+    private $file;
+
 
 
     /**
@@ -84,6 +84,12 @@ class Message
     public function setReadAt()
     {
 
+    }
+
+    public function setFile($file)
+    {
+        $this->file = $file;
+        return $this;
     }
 
 
